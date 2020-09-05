@@ -85,10 +85,12 @@ services:
     core.service.item_service:
         class: Core\Application\Service\ItemService
         arguments: ['@prooph_service_bus.vending_command_bus', '@prooph_service_bus.vending_query_bus', '@prooph_service_bus.message_factory']
+        public: true
 
     core.service.coin_service:
         class: Core\Application\Service\CoinService
         arguments: ['@prooph_service_bus.vending_command_bus', '@prooph_service_bus.vending_query_bus', '@prooph_service_bus.message_factory']
+        public: true
 
     core.projection.item_finder:
         class: Core\Infrastructure\Projection\Item\ItemFinder
