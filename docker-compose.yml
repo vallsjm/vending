@@ -1,0 +1,87 @@
+version: "3.1"
+services:
+
+    mysql:
+      image: mysql:5.7
+      container_name: ${PROJECT_NAME}-mysqldb
+      working_dir: /application
+#      restart: always
+      environment:
+        - MYSQL_ROOT_PASSWORD=1234
+        - MYSQL_DATABASE=vending
+        - MYSQL_USER=dev
+        - MYSQL_PASSWORD=1234
+      ports:
+        - 3306:3306
+      volumes:
+        - .:/application
+        - ./vendor/prooph/pdo-event-store/scripts/mysql:/docker-entrypoint-initdb.d
+      networks:
+        - mysqldb
+
+    webserver:
+      depends_on:
+        - php-fpm
+      image: nginx:alpine
+      container_name: ${PROJECT_NAME}-webserver
+      working_dir: /application
+      volumes:
+        - .:/application
+        - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      ports:
+        - 80:80
+      networks:
+        - mysqldb
+
+    php-fpm:
+      build: docker/php-fpm
+      container_name: ${PROJECT_NAME}-php-fpm
+      working_dir: /application
+      volumes:
+        - .:/application
+        - ./docker/php-fpm/php-ini-overrides.ini:/etc/php/7.4/fpm/conf.d/99-overrides.ini
+      networks:
+        - mysqldb
+
+    phpmyadmin:
+      depends_on:
+        - mysql
+      image: phpmyadmin/phpmyadmin
+      container_name: ${PROJECT_NAME}-phpmyadmin
+      ports:
+        - 8181:80
+      environment:
+        PMA_HOST: mysql
+        MYSQL_USERNAME: dev
+        MYSQL_ROOT_PASSWORD: 1234
+      networks:
+        - mysqldb
+
+    projection-coin:
+      depends_on:
+        - mysql
+      build: docker/php-fpm
+      container_name: ${PROJECT_NAME}-projection-coin
+      working_dir: /application
+      volumes:
+        - .:/application
+        - ./docker/php-fpm/php-ini-overrides.ini:/etc/php/7.4/fpm/conf.d/99-overrides.ini
+      networks:
+        - mysqldb
+      command: php bin/console event-store:projection:run coin_projection
+
+    projection-item:
+      depends_on:
+        - mysql
+      build: docker/php-fpm
+      container_name: ${PROJECT_NAME}-projection-item
+      working_dir: /application
+      volumes:
+        - .:/application
+        - ./docker/php-fpm/php-ini-overrides.ini:/etc/php/7.4/fpm/conf.d/99-overrides.ini
+      networks:
+        - mysqldb
+      command: php bin/console event-store:projection:run item_projection
+
+networks:
+  mysqldb:
