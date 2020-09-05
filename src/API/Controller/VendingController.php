@@ -68,7 +68,7 @@ final class VendingController
      *   @OA\Get(tags={"customer"}, summary="Return all inserted coins",
      *      @OA\Response(
      *          response=200,
-     *          description="Get inserted coins",
+     *          description="Get all inserted coins without buy any Item.",
      *          @OA\Schema(
      *               type="object",
      *               example={0.25, 0.10, 0.05}
@@ -112,7 +112,7 @@ final class VendingController
      *          enum={"SODA","JUICE","WATER"},
      *          default="SODA",
      *          type="string",
-     *          description="The Item name"
+     *          description="This endpoint emulates when you choose and buy Item. The vending machine return your change."
      *      ),
      *      @OA\Response(
      *          response=200,
@@ -132,10 +132,10 @@ final class VendingController
     }
 
     /**
-     *   @OA\Get(tags={"customer"}, summary="Check items info, price and amount of each one",
+     *   @OA\Get(tags={"customer"}, summary="Check items info, price and amount of each one.",
      *      @OA\Response(
      *          response=200,
-     *          description="Get items information",
+     *          description="Get items further information.",
      *          @OA\Schema(
      *               type="object",
      *               example={{"item": "WATER", "price": 0.65, "amount": 10}, {"item": "SODA", "price": 1.5, "amount": 0}, {"item": "JUICE", "price": 1, "amount": 4}}
@@ -154,7 +154,7 @@ final class VendingController
      *   @OA\Get(tags={"service"}, summary="Check status of everything",
      *      @OA\Response(
      *          response=200,
-     *          description="Get status",
+     *          description="Get the vending machine status. Further information about coins, items and pocket status.",
      *          @OA\Schema(
      *               type="object",
      *               example={"pocket": {"money": 0,"coins": {}},"machine": {"total": 24.85,"coins": {{"value": 1,"amount": 17},{"value": 0.25,"amount": 26},{"value": 0.1,"amount": 8},{"value": 0.05,"amount": 11}}},"items": {{"item": "WATER","price": 0.65,"amount": 10},{"item": "SODA","price": 1.5,"amount": 0},{"item": "JUICE","price": 1,"amount": 4}}}
