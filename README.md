@@ -93,7 +93,7 @@ Accept application/xml
 
 The diferent endpoints as customer implemented:
 
-```sh
+```console
 
 CUSTOMERS:
 
@@ -104,6 +104,7 @@ GET /api/item/buy/{name}             Buy an existing Item.
 GET /api/item/status                 Check items info, price and amount of each one.
 
 SERVICE:
+
 PUT /api/service/item/{name}         Tool for set the price or amount of each Item.
 PUT /api/service/coin/{coin}         Tool for set the amount of each Coin.
 GET /api/service/status              Check status of everything
