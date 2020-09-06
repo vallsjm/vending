@@ -91,7 +91,7 @@ Content-Type application/json
 Accept application/xml
 ```
 
-The diferent endpoints as customer implemented:
+The diferent endpoints implemented:
 
 ```console
 
