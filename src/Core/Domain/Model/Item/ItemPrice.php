@@ -13,6 +13,7 @@ final class ItemPrice extends BaseMoney
     {
         try {
             Assertion::min($value, 0);
+            Assertion::max($value, 9.99);
         } catch (\Exception $e) {
             throw new \InvalidArgumentException('Invalid item price because: '.$e->getMessage());
         }

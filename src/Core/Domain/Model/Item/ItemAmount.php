@@ -13,6 +13,7 @@ final class ItemAmount extends BaseInteger
     {
         try {
             Assertion::min($value, 0);
+            Assertion::max($value, 100);
         } catch (\Exception $e) {
             throw new \InvalidArgumentException('Invalid item amount because: '.$e->getMessage());
         }

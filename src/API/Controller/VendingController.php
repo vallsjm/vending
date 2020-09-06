@@ -112,7 +112,7 @@ final class VendingController
      *      ),
      *      @OA\Response(
      *          response=200,
-     *          description="Get coins",
+     *          description="Get Item and change. (* Note: It never returns coins of 1)",
      *          @OA\Schema(
      *               type="object",
      *               example={"SODA", 0.10, 0.05}
@@ -166,17 +166,13 @@ final class VendingController
      *          format="application/json",
      *          @OA\Schema(
      *              type="object",
-     *              @OA\Property(property="price", type="number", example=1.05),
-     *              @OA\Property(property="amount", type="number", example=10)
+     *              @OA\Property(property="price", type="number", description="* Note: the price must be a value between [0..9.99]", example=1.05),
+     *              @OA\Property(property="amount", type="number", description="* Note: the amount must be a value between [0..99]", example=10)
      *          )
      *      ),
      *      @OA\Response(
      *          response=200,
-     *          description="Put amount or item's price",
-     *          @OA\Schema(
-     *               type="object",
-     *               example={{"item": "WATER", "price": 0.65, "amount": 10}, {"item": "SODA", "price": 1.5, "amount": 0}, {"item": "JUICE", "price": 1, "amount": 4}}
-     *          )
+     *          description="The amount or item's price was updated"
      *      )
      *   )
      */
@@ -208,16 +204,12 @@ final class VendingController
      *          format="application/json",
      *          @OA\Schema(
      *              type="object",
-     *              @OA\Property(property="amount", type="number", example=10)
+     *              @OA\Property(property="amount", type="number", description="* Note: the amount must be a value between [0..99]", example=10)
      *          )
      *      ),
      *      @OA\Response(
      *          response=200,
-     *          description="Put amount or item's price",
-     *          @OA\Schema(
-     *               type="object",
-     *               example={{"item": "WATER", "price": 0.65, "amount": 10}, {"item": "SODA", "price": 1.5, "amount": 0}, {"item": "JUICE", "price": 1, "amount": 4}}
-     *          )
+     *          description="The amount or item's price was updated"
      *      )
      *   )
      */

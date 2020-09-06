@@ -47,19 +47,21 @@ final class Coin extends BaseAggregateRoot
 
     public function insertCoin(): void
     {
+        $amount = $this->amount->inc();
         $this->recordThat(CoinWasInserted::withData(
             $this->coinId,
             $this->value,
-            $this->amount->inc()
+            $amount
         ));
     }
 
     public function returnCoin(): void
     {
+        $amount = $this->amount->dec();
         $this->recordThat(CoinWasReturned::withData(
             $this->coinId,
             $this->value,
-            $this->amount->dec()
+            $amount
         ));
     }
 

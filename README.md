@@ -44,13 +44,13 @@ $ docker-compose up -d --force-recreate
 ### Create the event strem
 
 ```sh
-docker-compose run --rm php-fpm php bin/console event-store:event-stream:create
+$ docker-compose run --rm php-fpm php bin/console event-store:event-stream:create
 ```
 
 ### Load default items and coins
 
 ```sh
-docker-compose run --rm php-fpm php bin/console vending-machine:load
+$ docker-compose run --rm php-fpm php bin/console vending-machine:load
 ```
 
 
@@ -74,5 +74,5 @@ Test
 ===================
 
 ```sh
-docker-compose run --rm php-fpm ./bin/phpunit
+$ docker-compose run --rm php-fpm ./bin/phpunit
 ```

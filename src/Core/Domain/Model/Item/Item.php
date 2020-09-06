@@ -53,11 +53,12 @@ final class Item extends BaseAggregateRoot
 
     public function buyOneItem(): void
     {
+        $amount = $this->amount->dec();
         $this->recordThat(ItemWasBought::withData(
             $this->itemId,
             $this->name,
             $this->price,
-            $this->amount->dec()
+            $amount
         ));
     }
 

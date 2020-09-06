@@ -47,14 +47,12 @@ abstract class BaseMoney implements ValueObjectInterface
 
     public function inc(): self
     {
-        $value = $this->value;
-        return new static($value++);
+        return new static((float) bcadd((string) $this, '1', 2));
     }
 
     public function dec(): self
     {
-        $value = $this->value;
-        return new static($value--);
+        return new static((float) bcsub((string) $this, '1', 2));
     }
 
     public function add(BaseMoney $money): self

@@ -38,14 +38,14 @@ abstract class BaseFloat implements ValueObjectInterface
 
     public function inc(): self
     {
-        $value = $this->value;
-        return new static($value++);
+        $value = $this->value +1;
+        return new static($value);
     }
 
     public function dec(): self
     {
-        $value = $this->value;
-        return new static($value--);
+        $value = $this->value -1;
+        return new static($value);
     }
 
     public function add(BaseFloat $number): self
