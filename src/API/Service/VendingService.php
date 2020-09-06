@@ -25,9 +25,9 @@ final class VendingService
         $this->itemService = $itemService;
     }
 
-    public function insertCoin(float $value)
+    public function insertCoin(string $value)
     {
-        $this->pocketService->insertCoin($value);
+        $this->pocketService->insertCoin((float) $value);
     }
 
     public function returnAllCoins(): array
@@ -80,6 +80,16 @@ final class VendingService
     public function itemStatus(): array
     {
         return $this->itemService->status();
+    }
+
+    public function serviceItemUpdate(string $name, array $payload): array
+    {
+        return [];
+    }
+
+    public function serviceCoinUpdate(string $coin, array $payload): array
+    {
+        return [];
     }
 
     public function serviceStatus(): array

@@ -10,7 +10,7 @@ use Core\Domain\Model\Item\ItemId;
 use Core\Domain\Model\Coin\Event\CoinWasCreated;
 use Core\Domain\Model\Coin\Event\CoinWasInserted;
 use Core\Domain\Model\Coin\Event\CoinWasReturned;
-use Core\Domain\Model\Coin\Event\AmountCoinWasUpdated;
+use Core\Domain\Model\Coin\Event\CoinAmountWasUpdated;
 
 final class Coin extends BaseAggregateRoot
 {
@@ -63,9 +63,9 @@ final class Coin extends BaseAggregateRoot
         ));
     }
 
-    public function updateAmountCoin(CoinAmount $amount): void
+    public function updateCoinAmount(CoinAmount $amount): void
     {
-        $this->recordThat(AmountCoinWasUpdated::withData(
+        $this->recordThat(CoinAmountWasUpdated::withData(
             $this->coinId,
             $this->value,
             $this->amount,
@@ -110,7 +110,7 @@ final class Coin extends BaseAggregateRoot
         $this->amount = $event->amount();
     }
 
-    protected function whenAmountCoinWasUpdated(AmountCoinWasUpdated $event): void
+    protected function whenCoinAmountWasUpdated(CoinAmountWasUpdated $event): void
     {
         $this->amount = $event->newAmount();
     }

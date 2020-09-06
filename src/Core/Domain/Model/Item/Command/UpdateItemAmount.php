@@ -9,7 +9,7 @@ use Common\Domain\Command\BaseCommand;
 use Core\Domain\Model\Item\ItemId;
 use Core\Domain\Model\Item\ItemAmount;
 
-final class UpdateAmountItem extends BaseCommand
+final class UpdateItemAmount extends BaseCommand
 {
     function withData(string $itemId, int $amount): self
     {

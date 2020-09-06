@@ -9,7 +9,7 @@ use Core\Domain\Model\Coin\CoinAmount;
 use Core\Domain\Model\Coin\CoinValue;
 use Core\Domain\Model\Coin\CoinId;
 
-final class AmountCoinWasUpdated extends BaseAggregateChanged
+final class CoinAmountWasUpdated extends BaseAggregateChanged
 {
     /**
      * @var CoinId
@@ -37,7 +37,7 @@ final class AmountCoinWasUpdated extends BaseAggregateChanged
         CoinValue $value,
         CoinAmount $oldAmount,
         CoinAmount $newAmount
-    ): AmountCoinWasUpdated {
+    ): CoinAmountWasUpdated {
         /** @var self $event */
         $event = self::occur((string) $coinId, [
             'value' => $value->value(),

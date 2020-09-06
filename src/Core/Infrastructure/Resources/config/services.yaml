@@ -16,7 +16,13 @@ services:
         tags:
             - { name: 'prooph_service_bus.vending_command_bus.route_target', message_detection: true }
 
-    Core\Domain\Model\Item\Handler\UpdateAmountItemHandler:
+    Core\Domain\Model\Item\Handler\UpdateItemAmountHandler:
+        arguments: ['@item_collection']
+        public: true
+        tags:
+            - { name: 'prooph_service_bus.vending_command_bus.route_target', message_detection: true }
+
+    Core\Domain\Model\Item\Handler\UpdateItemPriceHandler:
         arguments: ['@item_collection']
         public: true
         tags:
@@ -58,7 +64,7 @@ services:
         tags:
             - { name: 'prooph_service_bus.vending_command_bus.route_target', message_detection: true }
 
-    Core\Domain\Model\Coin\Handler\UpdateAmountCoinHandler:
+    Core\Domain\Model\Coin\Handler\UpdateCoinAmountHandler:
         arguments: ['@coin_collection']
         public: true
         tags:

@@ -10,7 +10,7 @@ use Core\Domain\Model\Coin\CoinAmount;
 use Core\Domain\Model\Coin\CoinValue;
 use Core\Domain\Model\Coin\CoinId;
 
-final class UpdateAmountCoin extends BaseCommand
+final class UpdateCoinAmount extends BaseCommand
 {
     public static function withData(string $coinId, int $amount): self
     {

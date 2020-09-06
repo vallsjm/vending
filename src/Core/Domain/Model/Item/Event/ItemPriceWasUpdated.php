@@ -10,7 +10,7 @@ use Core\Domain\Model\Item\ItemName;
 use Core\Domain\Model\Item\ItemPrice;
 use Core\Domain\Model\Item\ItemAmount;
 
-final class AmountItemWasUpdated extends BaseAggregateChanged
+final class ItemPriceWasUpdated extends BaseAggregateChanged
 {
     /**
      * @var ItemId
@@ -25,38 +25,38 @@ final class AmountItemWasUpdated extends BaseAggregateChanged
     /**
      * @var ItemPrice
      */
-    private $price;
+    private $oldPrice;
+
+    /**
+     * @var ItemPrice
+     */
+    private $newPrice;
 
     /**
      * @var ItemAmount
      */
-    private $oldAmount;
-
-    /**
-     * @var ItemAmount
-     */
-    private $newAmount;
+    private $amount;
 
     public static function withData(
         ItemId $itemId,
         ItemName $name,
-        ItemPrice $price,
-        ItemAmount $oldAmount,
-        ItemAmount $newAmount
-    ): AmountItemWasUpdated {
+        ItemPrice $oldPrice,
+        ItemPrice $newPrice,
+        ItemAmount $amount
+    ): ItemPriceWasUpdated {
         /** @var self $event */
         $event = self::occur((string) $itemId, [
             'name' => $name->value(),
-            'price' => $price->value(),
-            'old_amount' => $oldAmount->value(),
-            'new_amount' => $newAmount->value()
+            'old_price' => $oldPrice->value(),
+            'new_price' => $newPrice->value(),
+            'amount' => $amount->value()
         ]);
 
         $event->itemId = $itemId;
         $event->name = $name;
-        $event->price = $price;
-        $event->oldAmount = $oldAmount;
-        $event->newAmount = $newAmount;
+        $event->oldPrice = $oldPprice;
+        $event->newPrice = $newPprice;
+        $event->amount = $amount;
 
         return $event;
     }
@@ -79,31 +79,31 @@ final class AmountItemWasUpdated extends BaseAggregateChanged
         return $this->name;
     }
 
-    public function price(): ItemPrice
+    public function oldPrice(): ItemPrice
     {
-        if (null === $this->price) {
-            $this->price = ItemPrice::fromFloat($this->payload['price']);
+        if (null === $this->oldPrice) {
+            $this->oldPrice = ItemPrice::fromFloat($this->payload['old_price']);
         }
 
         return $this->price;
     }
 
-    public function oldAmount(): ItemAmount
+    public function newPrice(): ItemPrice
     {
-        if (null === $this->oldAmount) {
-            $this->oldAmount = ItemAmount::fromInteger($this->payload['old_amount']);
+        if (null === $this->newPrice) {
+            $this->newPrice = ItemPrice::fromFloat($this->payload['new_price']);
         }
 
-        return $this->oldAmount;
+        return $this->price;
     }
 
-    public function newAmount(): ItemAmount
+    public function amount(): ItemAmount
     {
-        if (null === $this->newAmount) {
-            $this->newAmount = ItemAmount::fromInteger($this->payload['new_amount']);
+        if (null === $this->amount) {
+            $this->amount = ItemAmount::fromInteger($this->payload['amount']);
         }
 
-        return $this->newAmount;
+        return $this->amount;
     }
 
 }

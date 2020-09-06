@@ -7,7 +7,8 @@ namespace Core\Infrastructure\Projection\Item;
 use Common\Infrastructure\Projection\BaseReadProjection;
 use Core\Domain\Model\Item\Event\ItemWasCreated;
 use Core\Domain\Model\Item\Event\ItemWasBought;
-use Core\Domain\Model\Item\Event\AmountItemWasUpdated;
+use Core\Domain\Model\Item\Event\ItemAmountWasUpdated;
+use Core\Domain\Model\Item\Event\ItemPriceWasUpdated;
 
 final class ItemProjection extends BaseReadProjection
 {
@@ -35,12 +36,22 @@ final class ItemProjection extends BaseReadProjection
                     'id' => $event->itemId()->value()
                 ]);
             },
-            AmountItemWasUpdated::class => function ($state, AmountItemWasUpdated $event) {
+            ItemAmountWasUpdated::class => function ($state, ItemAmountWasUpdated $event) {
                 /** @var ItemReadModel $readModel */
                 // @phpstan-ignore-next-line
                 $readModel = $this->readModel();
                 $readModel->stack('update', [
                     'amount' => $event->newAmount()->value()
+                ],[
+                    'id' => $event->itemId()->value()
+                ]);
+            },
+            ItemPriceWasUpdated::class => function ($state, ItemPriceWasUpdated $event) {
+                /** @var ItemReadModel $readModel */
+                // @phpstan-ignore-next-line
+                $readModel = $this->readModel();
+                $readModel->stack('update', [
+                    'price' => $event->newPrice()->value()
                 ],[
                     'id' => $event->itemId()->value()
                 ]);

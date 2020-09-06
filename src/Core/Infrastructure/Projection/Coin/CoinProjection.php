@@ -8,7 +8,7 @@ use Common\Infrastructure\Projection\BaseReadProjection;
 use Core\Domain\Model\Coin\Event\CoinWasCreated;
 use Core\Domain\Model\Coin\Event\CoinWasInserted;
 use Core\Domain\Model\Coin\Event\CoinWasReturned;
-use Core\Domain\Model\Coin\Event\AmountCoinWasUpdated;
+use Core\Domain\Model\Coin\Event\CoinAmountWasUpdated;
 
 final class CoinProjection extends BaseReadProjection
 {
@@ -45,7 +45,7 @@ final class CoinProjection extends BaseReadProjection
                     'id' => $event->coinId()->value()
                 ]);
             },
-            AmountCoinWasUpdated::class => function ($state, AmountCoinWasUpdated $event) {
+            CoinAmountWasUpdated::class => function ($state, CoinAmountWasUpdated $event) {
                 /** @var CoinReadModel $readModel */
                 // @phpstan-ignore-next-line
                 $readModel = $this->readModel();

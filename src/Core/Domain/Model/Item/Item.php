@@ -8,7 +8,7 @@ use Common\Domain\Aggregate\BaseAggregateRoot;
 use Common\Domain\Entity\EntityInterface;
 use Core\Domain\Model\Item\Event\ItemWasCreated;
 use Core\Domain\Model\Item\Event\ItemWasBought;
-use Core\Domain\Model\Item\Event\AmountItemWasUpdated;
+use Core\Domain\Model\Item\Event\ItemAmountWasUpdated;
 
 final class Item extends BaseAggregateRoot
 {
@@ -60,14 +60,25 @@ final class Item extends BaseAggregateRoot
         ));
     }
 
-    public function updateAmountItem(ItemAmount $amount): void
+    public function updateItemAmount(ItemAmount $amount): void
     {
-        $this->recordThat(AmountItemWasUpdated::withData(
+        $this->recordThat(ItemAmountWasUpdated::withData(
             $this->itemId,
             $this->name,
             $this->price,
             $this->amount,
             $amount
+        ));
+    }
+
+    public function updateItemPrice(ItemPrice $price): void
+    {
+        $this->recordThat(ItemPriceWasUpdated::withData(
+            $this->itemId,
+            $this->name,
+            $this->price,
+            $price,
+            $this->amount
         ));
     }
 
@@ -109,9 +120,14 @@ final class Item extends BaseAggregateRoot
         $this->amount = $event->amount();
     }
 
-    protected function whenAmountItemWasUpdated(AmountItemWasUpdated $event): void
+    protected function whenItemAmountWasUpdated(ItemAmountWasUpdated $event): void
     {
         $this->amount = $event->newAmount();
+    }
+
+    protected function whenItemPriceWasUpdated(ItemPriceWasUpdated $event): void
+    {
+        $this->price = $event->newPrice();
     }
 
     public function equals(EntityInterface $other): bool
