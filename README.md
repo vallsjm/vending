@@ -17,6 +17,12 @@ Prerequisites
 - Symfony 4.4.11
 - Docker + Docker Compose
 
+Links
+===================
+
+- [Libreria Prooph](http://getprooph.org/)
+
+
 Install
 ===================
 
@@ -69,6 +75,47 @@ http://localhost:8181
 user: dev
 password: 1234
 ```
+
+API
+===================
+
+The endpoints allows responses as JSON and XML. You can choose the request and response format using the HTTP header negotiation.
+
+That's mens the Content-Type header is used for define the request format and the Accept header for the response.
+
+You can try the API directly from the swagger implemented in the localhost or using any REST application like Postman.
+
+
+```sh
+Content-Type application/json
+Accept application/xml
+```
+
+The diferent endpoints as customer implemented:
+
+```sh
+
+CUSTOMERS:
+
+POST /api/coin/insert/{coin}         Insert new coin inside the vending machine.
+GET /api/coin/return                 Return all inserted coins.
+GET /api/coin/status                 Check how much money I have inserted.
+GET /api/item/buy/{name}             Buy an existing Item.
+GET /api/item/status                 Check items info, price and amount of each one.
+
+SERVICE:
+PUT /api/service/item/{name}         Tool for set the price or amount of each Item.
+PUT /api/service/coin/{coin}         Tool for set the amount of each Coin.
+GET /api/service/status              Check status of everything
+```
+
+Considerations
+===================
+* The Item price must be a value between [0..9.99]
+* The Item Amount or Coin Amout must be a value [0..99]
+* The Items can be WATER, JUICE and SODA
+* When you buy a Item, the vending machine never returns coins of 1. It's a requirement.
+
 
 Test
 ===================

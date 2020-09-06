@@ -132,11 +132,13 @@ final class CoinService extends BaseService
             $coins = $this->coins();
             foreach ($coins as $coin) {
                 $value  = $coin->value();
-                $amount = $coin->amount();
-                while ($change->isGreaterThanOrEqualTo($value) && ($amount > 0)) {
-                    $availableCoins[] = $value->value();
-                    $change = $change->sub($value);
-                    $amount--;
+                if (in_value($value->value(), CoinValueType::RETURN)) {
+                    $amount = $coin->amount();
+                    while ($change->isGreaterThanOrEqualTo($value) && ($amount > 0)) {
+                        $availableCoins[] = $value->value();
+                        $change = $change->sub($value);
+                        $amount--;
+                    }
                 }
             }
         }

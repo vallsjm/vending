@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Common\Domain\ValueObject\Money\BaseMoney;
 use Core\Domain\Model\Coin\ChangeValue;
 use Core\Domain\Model\Coin\CoinValue;
+use Core\Domain\Model\Coin\Type\CoinValueType;
 
 final class PocketService
 {
@@ -80,10 +81,12 @@ final class PocketService
             $pocket = $this->coins();
             rsort($pocket, SORT_NUMERIC);
             foreach ($pocket as $money) {
-                $coin = CoinValue::fromFloat($money);
-                if ($change->isGreaterThanOrEqualTo($coin)) {
-                    $availableCoins[] = $coin->value();
-                    $change = $change->sub($coin);
+                if (in_array($money, CoinValueType::RETURN)) {
+                    $coin = CoinValue::fromFloat($money);
+                    if ($change->isGreaterThanOrEqualTo($coin)) {
+                        $availableCoins[] = $coin->value();
+                        $change = $change->sub($coin);
+                    }
                 }
             }
         }
