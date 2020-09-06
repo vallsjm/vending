@@ -48,7 +48,7 @@ final class VendingController
      *          description="The coin value."
      *      ),
      *      @OA\Response(
-     *          response=200,
+     *          response=201,
      *          description="Coin inserted"
      *      )
      * )
@@ -57,7 +57,7 @@ final class VendingController
     {
         $this->vendingService->insertCoin($request->get('coin'));
 
-        return $this->formatResponseService->response([]);
+        return $this->formatResponseService->response([], Response::HTTP_CREATED);
     }
 
     /**
