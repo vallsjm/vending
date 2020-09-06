@@ -84,11 +84,24 @@ final class VendingService
 
     public function serviceItemUpdate(string $name, array $payload): array
     {
+        $item  = $this->itemService->findItemByName($name);
+        if (isset($payload['price'])) {
+            $this->itemService->updateItemPrice($item, (float) $payload['price']);
+        }
+        if (isset($payload['amount'])) {
+            $this->itemService->updateItemAmount($item, (int) $payload['amount']);
+        }
+
         return [];
     }
 
-    public function serviceCoinUpdate(string $coin, array $payload): array
+    public function serviceCoinUpdate(string $value, array $payload): array
     {
+        $coin  = $this->coinService->findItemByValue($value);
+        if (isset($payload['amount'])) {
+            $this->coinService->updateCoinAmount($coin, (int) $payload['amount']);
+        }
+
         return [];
     }
 

@@ -9,6 +9,7 @@ use Common\Domain\Entity\EntityInterface;
 use Core\Domain\Model\Item\Event\ItemWasCreated;
 use Core\Domain\Model\Item\Event\ItemWasBought;
 use Core\Domain\Model\Item\Event\ItemAmountWasUpdated;
+use Core\Domain\Model\Item\Event\ItemPriceWasUpdated;
 
 final class Item extends BaseAggregateRoot
 {

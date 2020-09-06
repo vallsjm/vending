@@ -34,6 +34,6 @@ final class UpdateItemPrice extends BaseCommand
         Assertion::keyExists($payload, 'item_id');
         Assertion::uuid($payload['item_id']);
         Assertion::keyExists($payload, 'price');
-        Assertion::integer($payload['price']);
+        Assertion::float($payload['price']);
     }
 }

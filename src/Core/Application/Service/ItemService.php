@@ -68,6 +68,34 @@ final class ItemService extends BaseService
         return $item->name();
     }
 
+    public function updateItemAmount(Item $item, int $amount): void
+    {
+        $payload = [
+            'item_id' => $item->itemId(),
+            'amount' => $amount
+        ];
+
+        $command = $this->messageFactory->createMessageFromArray(
+            'Core\Domain\Model\Item\Command\UpdateItemAmount', ['payload' => $payload]
+        );
+
+        $this->commandBus->dispatch($command);
+    }
+
+    public function updateItemPrice(Item $item, float $price): void
+    {
+        $payload = [
+            'item_id' => $item->itemId(),
+            'price' => $price
+        ];
+
+        $command = $this->messageFactory->createMessageFromArray(
+            'Core\Domain\Model\Item\Command\UpdateItemPrice', ['payload' => $payload]
+        );
+
+        $this->commandBus->dispatch($command);
+    }
+
     public function items(): array
     {
         $payload = [];

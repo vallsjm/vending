@@ -89,6 +89,20 @@ final class CoinService extends BaseService
         $this->commandBus->dispatch($command);
     }
 
+    public function updateCoinAmount(Coin $coin, int $amount): void
+    {
+        $payload = [
+            'coin_id' => $coin->coinId(),
+            'amount' => $amount
+        ];
+
+        $command = $this->messageFactory->createMessageFromArray(
+            'Core\Domain\Model\Coin\Command\UpdateCoinAmount', ['payload' => $payload]
+        );
+
+        $this->commandBus->dispatch($command);
+    }
+
     public function returnCoins(array $coins): void
     {
         foreach ($coins as $coin) {

@@ -39,7 +39,7 @@ api::vending-service-item:
     methods: PUT
 
 api::vending-service-coin:
-    path: /api/service/coin/{value}
+    path: /api/service/coin/{coin}
     defaults: { _controller: API\Controller\VendingController:putServiceCoinAction }
     methods: PUT
 

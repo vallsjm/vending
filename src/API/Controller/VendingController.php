@@ -157,6 +157,19 @@ final class VendingController
      *          type="string",
      *          description="The Item's name."
      *      ),
+     *      @OA\Parameter(
+     *          name="body",
+     *          in="body",
+     *          description="JSON Payload",
+     *          required=true,
+     *          type="json",
+     *          format="application/json",
+     *          @OA\Schema(
+     *              type="object",
+     *              @OA\Property(property="price", type="number", example=1.05),
+     *              @OA\Property(property="amount", type="number", example=10)
+     *          )
+     *      ),
      *      @OA\Response(
      *          response=200,
      *          description="Put amount or item's price",
@@ -185,6 +198,18 @@ final class VendingController
      *          default="1.00",
      *          type="number",
      *          description="The coin value."
+     *      ),
+     *      @OA\Parameter(
+     *          name="body",
+     *          in="body",
+     *          description="JSON Payload",
+     *          required=true,
+     *          type="json",
+     *          format="application/json",
+     *          @OA\Schema(
+     *              type="object",
+     *              @OA\Property(property="amount", type="number", example=10)
+     *          )
      *      ),
      *      @OA\Response(
      *          response=200,

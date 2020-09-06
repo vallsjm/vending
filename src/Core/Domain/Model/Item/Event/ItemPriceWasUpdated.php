@@ -54,8 +54,8 @@ final class ItemPriceWasUpdated extends BaseAggregateChanged
 
         $event->itemId = $itemId;
         $event->name = $name;
-        $event->oldPrice = $oldPprice;
-        $event->newPrice = $newPprice;
+        $event->oldPrice = $oldPrice;
+        $event->newPrice = $newPrice;
         $event->amount = $amount;
 
         return $event;
@@ -85,7 +85,7 @@ final class ItemPriceWasUpdated extends BaseAggregateChanged
             $this->oldPrice = ItemPrice::fromFloat($this->payload['old_price']);
         }
 
-        return $this->price;
+        return $this->oldPrice;
     }
 
     public function newPrice(): ItemPrice
@@ -94,7 +94,7 @@ final class ItemPriceWasUpdated extends BaseAggregateChanged
             $this->newPrice = ItemPrice::fromFloat($this->payload['new_price']);
         }
 
-        return $this->price;
+        return $this->newPrice;
     }
 
     public function amount(): ItemAmount
