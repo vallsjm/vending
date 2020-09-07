@@ -122,5 +122,6 @@ Test
 ===================
 
 ```sh
-$ docker-compose run --rm php-fpm ./bin/phpunit
+$ docker-compose run --rm php-fpm composer analyze
+$ docker-compose run --rm php-fpm composer test
 ```
