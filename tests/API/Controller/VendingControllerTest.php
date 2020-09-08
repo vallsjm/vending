@@ -55,17 +55,16 @@ class VengingControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $payload = [
-            'price' => 1.50,
-            'amount' => 10
-        ];
 
         $coins = [
             '1',
-            '0.05',
-            '0.05',
-            '0.25',
-            '0.25'
+            '1',
+            '0.05'
+        ];
+
+        $payload = [
+            'price' => 1.50,
+            'amount' => 10
         ];
 
         $client->request(
@@ -109,7 +108,7 @@ class VengingControllerTest extends WebTestCase
         );
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertContains('<response><item key="0">SODA</item><item key="1">0.05</item><item key="2">0.05</item></response>', $client->getResponse()->getContent());
+        $this->assertContains('<response><item key="0">SODA</item><item key="1">0.05</item><item key="2">0.25</item><item key="3">0.25</item></response>', $client->getResponse()->getContent());
     }
 
 }

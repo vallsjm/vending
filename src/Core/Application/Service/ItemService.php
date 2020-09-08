@@ -117,8 +117,8 @@ final class ItemService extends BaseService
         $status = [];
         foreach ($items as $item) {
             $status[] = [
-                'item' => $item->name(),
-                'price' => $item->price()->value(),
+                'item'   => $item->name(),
+                'price'  => $item->price()->value(),
                 'amount' => $item->amount()
             ];
         }

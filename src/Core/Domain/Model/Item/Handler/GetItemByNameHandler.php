@@ -20,6 +20,10 @@ class GetItemByNameHandler
     public function __invoke(GetItemByName $query, Deferred $deferred = null)
     {
         $item = $this->itemFinder->findByName($query->name());
+        if (!$item) {
+            throw new \InvalidArgumentException(\sprintf('We doesn\'t have ' . $query->name() . '.'));
+        }
+
         if (null === $deferred) {
             return $item;
         }

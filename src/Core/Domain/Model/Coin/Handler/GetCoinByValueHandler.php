@@ -20,6 +20,10 @@ class GetCoinByValueHandler
     public function __invoke(GetCoinByValue $query, Deferred $deferred = null)
     {
         $coin = $this->coinFinder->findByValue($query->value());
+        if (!$coin) {
+            throw new \InvalidArgumentException(\sprintf('We doesn\'t have coins ' . $query->value() . '.'));
+        }
+
         if (null === $deferred) {
             return $coin;
         }

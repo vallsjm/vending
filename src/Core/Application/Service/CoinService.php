@@ -7,9 +7,8 @@ namespace Core\Application\Service;
 use Common\Application\Service\BaseService;
 use Core\Domain\Model\Coin\CoinId;
 use Core\Domain\Model\Coin\View\Coin;
-use Common\Domain\ValueObject\Money\BaseMoney;
+use Core\Domain\Model\Coin\MoneyValue;
 use Core\Domain\Model\Coin\Type\CoinValueType;
-use Core\Domain\Model\Coin\ChangeValue;
 
 final class CoinService extends BaseService
 {
@@ -52,10 +51,18 @@ final class CoinService extends BaseService
         return $coin;
     }
 
-    public function insertCoin(float $value): void
+    public function findCoinsByValues(array $values): array
     {
-        $coin = $this->findCoinByValue($value);
+        $ret = [];
+        foreach ($values as $value) {
+            $ret[] = $this->findCoinByValue($value);
+        }
 
+        return $ret;
+    }
+
+    public function insertCoin(Coin $coin): void
+    {
         $payload = [
             'coin_id' => $coin->coinId()
         ];
@@ -74,10 +81,8 @@ final class CoinService extends BaseService
         }
     }
 
-    public function returnCoin(float $value): void
+    public function returnCoin(Coin $coin): ?Coin
     {
-        $coin = $this->findCoinByValue($value);
-
         $payload = [
             'coin_id' => $coin->coinId()
         ];
@@ -87,6 +92,8 @@ final class CoinService extends BaseService
         );
 
         $this->commandBus->dispatch($command);
+
+        return $coin;
     }
 
     public function updateCoinAmount(Coin $coin, int $amount): void
@@ -103,11 +110,13 @@ final class CoinService extends BaseService
         $this->commandBus->dispatch($command);
     }
 
-    public function returnCoins(array $coins): void
+    public function returnCoins(array $coins): array
     {
         foreach ($coins as $coin) {
             $this->returnCoin($coin);
         }
+
+        return $coins;
     }
 
     public function coins(): array
@@ -125,41 +134,20 @@ final class CoinService extends BaseService
         return $coins;
     }
 
-    public function availableCoinsForChange(BaseMoney $change): array
-    {
-        $availableCoins = [];
-        if ($change->isGreaterThanZero()) {
-            $coins = $this->coins();
-            foreach ($coins as $coin) {
-                $value  = $coin->value();
-                if (in_array($value->value(), CoinValueType::RETURN)) {
-                    $amount = $coin->amount();
-                    while ($change->isGreaterThanOrEqualTo($value) && ($amount > 0)) {
-                        $availableCoins[] = $value->value();
-                        $change = $change->sub($value);
-                        $amount--;
-                    }
-                }
-            }
-        }
-
-        return $availableCoins;
-    }
-
     public function status(): array
     {
         $coins = $this->coins();
         $status = [];
-        $total = ChangeValue::fromFloat(0);
+        $total = MoneyValue::fromFloat(0);
         foreach ($coins as $coin) {
             $status[] = [
-                'value' => $coin->value()->value(),
+                'value'  => $coin->value()->value(),
                 'amount' => $coin->amount()
             ];
 
-            $totalThisCoin = ChangeValue::fromFloat($coin->value()->value());
+            $totalThisCoin = MoneyValue::fromFloat($coin->value()->value());
             $totalThisCoin = $totalThisCoin->mul(
-                ChangeValue::fromFloat($coin->amount())
+                MoneyValue::fromFloat($coin->amount())
             );
 
             $total = $total->add($totalThisCoin);

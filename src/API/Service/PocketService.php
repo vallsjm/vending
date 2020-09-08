@@ -5,10 +5,7 @@ declare(strict_types=1);
 namespace API\Service;
 
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Common\Domain\ValueObject\Money\BaseMoney;
-use Core\Domain\Model\Coin\ChangeValue;
-use Core\Domain\Model\Coin\CoinValue;
-use Core\Domain\Model\Coin\Type\CoinValueType;
+use Core\Domain\Model\Coin\MoneyValue;
 
 final class PocketService
 {
@@ -30,69 +27,47 @@ final class PocketService
         $this->session->set('pocket', []);
     }
 
-    public function total(): BaseMoney
-    {
-        return ChangeValue::fromArray($this->coins());
-    }
-
-    public function change(BaseMoney $price): BaseMoney
-    {
-        return $this->total()->sub($price);
-    }
-
-    public function status(): array
-    {
-        return [
-            'money' => $this->total()->value(),
-            'coins' => $this->coins()
-        ];
-    }
-
     public function insertCoin(float $coin): void
     {
-        $coin = CoinValue::fromFloat($coin);
         $pocket = $this->coins();
-        array_push($pocket, $coin->value());
+        array_push($pocket, $coin);
         $this->session->set('pocket', $pocket);
     }
 
-    public function returnCoin(float $coin): void
+    public function returnCoin(float $coin): float
     {
         $pocket = $this->coins();
         if (($key = array_search($coin, $pocket)) !== false) {
             unset($pocket[$key]);
             $this->session->set('pocket', $pocket);
+            return $coin;
         } else {
             throw new \InvalidArgumentException('The coin is not found inside the pocket.');
         }
     }
 
-    public function returnCoins(array $coins): void
+    public function returnCoins(array $coins): array
     {
         foreach ($coins as $coin) {
             $this->returnCoin($coin);
         }
+
+        return $coins;
     }
 
-    public function availableCoinsForChange(BaseMoney $change): array
+    public function total(): float
     {
-        $availableCoins = [];
-        if ($change->isGreaterThanZero()) {
-            $pocket = $this->coins();
-            rsort($pocket, SORT_NUMERIC);
-            foreach ($pocket as $money) {
-                if (in_array($money, CoinValueType::RETURN)) {
-                    $coin = CoinValue::fromFloat($money);
-                    if ($change->isGreaterThanOrEqualTo($coin)) {
-                        $availableCoins[] = $coin->value();
-                        $change = $change->sub($coin);
-                    }
-                }
-            }
-        }
+        $money = MoneyValue::fromArray($this->coins());
 
-        return $availableCoins;
+        return $money->value();
     }
 
+    public function status(): array
+    {
+        return [
+            'money' => $this->total(),
+            'coins' => $this->coins()
+        ];
+    }
 
 }
