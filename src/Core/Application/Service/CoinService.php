@@ -7,7 +7,9 @@ namespace Core\Application\Service;
 use Common\Application\Service\BaseService;
 use Core\Domain\Model\Coin\CoinId;
 use Core\Domain\Model\Coin\View\Coin;
-use Core\Domain\Model\Coin\MoneyValue;
+use Core\Domain\Model\Coin\View\CoinValue;
+use Core\Domain\Model\Coin\View\CoinCollection;
+use Core\Domain\Model\Coin\View\CoinResumeCollection;
 use Core\Domain\Model\Coin\Type\CoinValueType;
 
 final class CoinService extends BaseService
@@ -29,10 +31,10 @@ final class CoinService extends BaseService
         }
     }
 
-    public function findCoinByValue(float $value): ?Coin
+    public function findCoinByValue(CoinValue $value): ?Coin
     {
         $payload = [
-            'value' => $value
+            'value' => $value->value()
         ];
 
         $query = $this->messageFactory->createMessageFromArray(
@@ -51,16 +53,6 @@ final class CoinService extends BaseService
         return $coin;
     }
 
-    public function findCoinsByValues(array $values): array
-    {
-        $ret = [];
-        foreach ($values as $value) {
-            $ret[] = $this->findCoinByValue($value);
-        }
-
-        return $ret;
-    }
-
     public function insertCoin(Coin $coin): void
     {
         $payload = [
@@ -74,7 +66,7 @@ final class CoinService extends BaseService
         $this->commandBus->dispatch($command);
     }
 
-    public function insertCoins(array $coins): void
+    public function insertCoins(CoinCollection $coins): void
     {
         foreach ($coins as $coin) {
             $this->insertCoin($coin);
@@ -110,7 +102,7 @@ final class CoinService extends BaseService
         $this->commandBus->dispatch($command);
     }
 
-    public function returnCoins(array $coins): array
+    public function returnCoins(CoinCollection $coins): ?CoinCollection
     {
         foreach ($coins as $coin) {
             $this->returnCoin($coin);
@@ -119,14 +111,14 @@ final class CoinService extends BaseService
         return $coins;
     }
 
-    public function coins(): array
+    public function coins(): CoinResumeCollection
     {
         $payload = [];
         $query = $this->messageFactory->createMessageFromArray(
             'Core\Domain\Model\Coin\Query\GetAllCoins', ['payload' => $payload]
         );
 
-        $coins = [];
+        $coins = new CoinResumeCollection();
         $this->queryBus->dispatch($query)->then(function ($result) use (&$coins) {
             $coins = $result;
         });
@@ -137,25 +129,10 @@ final class CoinService extends BaseService
     public function status(): array
     {
         $coins = $this->coins();
-        $status = [];
-        $total = MoneyValue::fromFloat(0);
-        foreach ($coins as $coin) {
-            $status[] = [
-                'value'  => $coin->value()->value(),
-                'amount' => $coin->amount()
-            ];
-
-            $totalThisCoin = MoneyValue::fromFloat($coin->value()->value());
-            $totalThisCoin = $totalThisCoin->mul(
-                MoneyValue::fromFloat($coin->amount())
-            );
-
-            $total = $total->add($totalThisCoin);
-        }
 
         return [
-            'total' => $total->value(),
-            'coins' => $status
+            'total' => $coins->total()->value(),
+            'coins' => $coins->resume()
         ];
     }
 

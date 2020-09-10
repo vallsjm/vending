@@ -43,7 +43,7 @@ final class VendingController
      *          in="path",
      *          required=true,
      *          enum={0.05, 0.10, 0.25, 1.00},
-     *          default="1.00",
+     *          default="0.05",
      *          type="number",
      *          description="The coin value."
      *      ),
@@ -191,7 +191,7 @@ final class VendingController
      *          in="path",
      *          required=true,
      *          enum={0.05, 0.10, 0.25, 1.00},
-     *          default="1.00",
+     *          default="0.05",
      *          type="number",
      *          description="The coin value."
      *      ),

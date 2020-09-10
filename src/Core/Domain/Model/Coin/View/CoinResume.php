@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Core\Domain\Model\Coin\View;
 
-use \JsonSerializable;
+use Core\Domain\Model\Coin\View\Coin;
 use Core\Domain\Model\Coin\View\CoinValue;
+use \JsonSerializable;
 
-final class Coin implements JsonSerializable
+final class CoinResume implements JsonSerializable
 {
     /**
      * @var CoinId
@@ -16,25 +17,38 @@ final class Coin implements JsonSerializable
 
     private $value;
 
+    private $amount;
+
     // Mandatory PDO fetch class, property types
     public function __construct()
     {
         if (!empty($this->value)) {
             $this->id     = (string) $this->id;
             $this->value  = CoinValue::fromString($this->value);
+            $this->amount = (int) $this->amount;
         }
     }
 
     public static function createWithData(
         string $coinId,
-        CoinValue $value
+        CoinValue $value,
+        int $amount
     ): Coin {
 
-        $self        = new self();
-        $self->id    = $coinId;
-        $self->value = $value;
+        $self         = new self();
+        $self->id     = $coinId;
+        $self->value  = $value;
+        $self->amount = $amount;
 
         return $self;
+    }
+
+    public function coin(): Coin
+    {
+        return Coin::createWithData(
+            $this->id,
+            $this->value
+        );
     }
 
     public function coinId(): string
@@ -47,11 +61,17 @@ final class Coin implements JsonSerializable
         return $this->value;
     }
 
+    public function amount(): int
+    {
+        return $this->amount;
+    }
+
     public function toArray(): array
     {
         return [
             'id'     => $this->id,
-            'value'  => $this->value->value()
+            'value'  => $this->value->value(),
+            'amount' => $this->amount
         ];
     }
 

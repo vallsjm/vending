@@ -16,6 +16,11 @@ abstract class BaseMoney implements ValueObjectInterface
         $this->value = $value;
     }
 
+    public static function fromBase(BaseMoney $value): self
+    {
+        return new static($value->value());
+    }
+
     public static function fromFloat(float $value): self
     {
         return new static($value);
@@ -24,15 +29,6 @@ abstract class BaseMoney implements ValueObjectInterface
     public static function fromString(string $value): self
     {
         return new static((float) $value);
-    }
-
-    public static function fromArray(array $values): self
-    {
-        $total = '0';
-        array_walk($values, function($value) use (&$total) {
-            $total = bcadd((string) $total, (string) $value, 2);
-        });
-        return new static((float) $total);
     }
 
     public function __toString(): string

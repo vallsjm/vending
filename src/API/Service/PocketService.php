@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace API\Service;
 
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Core\Domain\Model\Coin\MoneyValue;
+use Core\Domain\Model\Coin\View\Coin;
+use Core\Domain\Model\Coin\View\MoneyValue;
+use Core\Domain\Model\Coin\View\CoinCollection;
 
 final class PocketService
 {
@@ -17,9 +19,10 @@ final class PocketService
         $this->session = $session;
     }
 
-    public function coins(): array
+    public function coins(): CoinCollection
     {
-        return $this->session->get('pocket', []);
+        $coins = $this->session->get('pocket', []);
+        return new CoinCollection($coins);
     }
 
     public function reset(): void
@@ -27,26 +30,26 @@ final class PocketService
         $this->session->set('pocket', []);
     }
 
-    public function insertCoin(float $coin): void
+    public function insertCoin(Coin $coin): void
     {
         $pocket = $this->coins();
-        array_push($pocket, $coin);
-        $this->session->set('pocket', $pocket);
+        $pocket->append($coin);
+        $this->session->set('pocket', $pocket->getArrayCopy());
     }
 
-    public function returnCoin(float $coin): float
+    public function returnCoin(Coin $coin): Coin
     {
         $pocket = $this->coins();
-        if (($key = array_search($coin, $pocket)) !== false) {
-            unset($pocket[$key]);
-            $this->session->set('pocket', $pocket);
+        if ($pocket->contains($coin)) {
+            $pocket->remove($coin);
+            $this->session->set('pocket', $pocket->getArrayCopy());
             return $coin;
         } else {
-            throw new \InvalidArgumentException('The coin is not found inside the pocket.');
+            throw new \InvalidArgumentException('The coin ' . $coin->value() . ' is not found inside the pocket.');
         }
     }
 
-    public function returnCoins(array $coins): array
+    public function returnCoins(CoinCollection $coins): CoinCollection
     {
         foreach ($coins as $coin) {
             $this->returnCoin($coin);
@@ -55,18 +58,16 @@ final class PocketService
         return $coins;
     }
 
-    public function total(): float
+    public function total(): MoneyValue
     {
-        $money = MoneyValue::fromArray($this->coins());
-
-        return $money->value();
+        return $this->coins()->total();
     }
 
     public function status(): array
     {
         return [
-            'money' => $this->total(),
-            'coins' => $this->coins()
+            'money' => $this->total()->value(),
+            'coins' => $this->coins()->values()
         ];
     }
 

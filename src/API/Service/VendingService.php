@@ -7,9 +7,12 @@ namespace API\Service;
 use API\Service\PocketService;
 use Core\Application\Service\CoinService;
 use Core\Application\Service\ItemService;
-use Core\Domain\Model\Coin\ChangeValue;
-use Core\Domain\Model\Coin\CoinValue;
+use Core\Domain\Model\Coin\View\ChangeValue;
+use Core\Domain\Model\Coin\View\CoinValue;
+use Core\Domain\Model\Item\View\ItemPrice;
 use Core\Application\Calculate\Change;
+
+use Core\Domain\Model\Coin\View\CoinCollection;
 
 final class VendingService
 {
@@ -27,10 +30,11 @@ final class VendingService
         $this->itemService = $itemService;
     }
 
-    public function insertCoin(string $coin)
+    public function insertCoin(string $coinString): void
     {
-        $coin = CoinValue::fromString($coin);
-        $this->pocketService->insertCoin($coin->value());
+        $coinValue = CoinValue::fromString($coinString);
+        $coin = $this->coinService->findCoinByValue($coinValue);
+        $this->pocketService->insertCoin($coin);
     }
 
     public function returnAllCoins(): array
@@ -39,7 +43,7 @@ final class VendingService
         $coinsReturned = $this->pocketService->returnCoins($coinsToReturn);
         $this->pocketService->reset();
 
-        return $coinsReturned;
+        return $coinsReturned->values();
     }
 
     public function coinStatus(): array
@@ -47,11 +51,11 @@ final class VendingService
         return $this->pocketService->status();
     }
 
-    public function buyItem(string $name): array
+    public function buyItem(string $itemName): array
     {
-        $item  = $this->itemService->findItemByName($name);
+        $item  = $this->itemService->findItemByName($itemName);
         if ($item->amount() < 1) {
-            throw new \InvalidArgumentException('We don\'t have enough ' . $name);
+            throw new \InvalidArgumentException('We don\'t have enough ' . $itemName);
         }
 
         $change = new Change(
@@ -64,23 +68,19 @@ final class VendingService
         $changeCoinsFromPocket = $this->pocketService->returnCoins(
                 $change->changeCoinsFromPocket()
         );
-        $this->coinService->returnCoins(
-            $this->coinService->findCoinsByValues(
-                $changeCoinsFromMachine = $change->changeCoinsFromMachine()
-            )
+        $changeCoinsFromMachine = $this->coinService->returnCoins(
+                $change->changeCoinsFromMachine()
         );
 
         # the coins on the pocket are the price of the item
         $this->coinService->insertCoins(
-            $this->coinService->findCoinsByValues(
-                $this->pocketService->coins()
-            )
+            $this->pocketService->coins()
         );
 
         $itemName = $this->itemService->buyItem($item);
         $this->pocketService->reset();
 
-        return array_merge([$itemName], $changeCoinsFromPocket, $changeCoinsFromMachine);
+        return array_merge([$itemName], $changeCoinsFromPocket->values(), $changeCoinsFromMachine->values());
     }
 
     public function itemStatus(): array
@@ -88,9 +88,9 @@ final class VendingService
         return $this->itemService->status();
     }
 
-    public function serviceItemUpdate(string $name, array $payload): array
+    public function serviceItemUpdate(string $itemName, array $payload): array
     {
-        $item  = $this->itemService->findItemByName($name);
+        $item  = $this->itemService->findItemByName($itemName);
         if (isset($payload['price'])) {
             $this->itemService->updateItemPrice($item, (float) $payload['price']);
         }
@@ -101,10 +101,10 @@ final class VendingService
         return $payload;
     }
 
-    public function serviceCoinUpdate(string $coin, array $payload): array
+    public function serviceCoinUpdate(string $coinString, array $payload): array
     {
-        $coin = CoinValue::fromString($coin);
-        $coin = $this->coinService->findCoinByValue($coin);
+        $coinValue = CoinValue::fromString($coinString);
+        $coin = $this->coinService->findCoinByValue($coinValue);
         if (isset($payload['amount'])) {
             $this->coinService->updateCoinAmount($coin, (int) $payload['amount']);
         }

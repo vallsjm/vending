@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Core\Application\Calculate;
 
-use Core\Domain\Model\Coin\CoinValue;
-use Core\Domain\Model\Coin\ChangeValue;
-use Core\Domain\Model\Item\ItemPrice;
+use Core\Domain\Model\Coin\View\CoinValue;
+use Core\Domain\Model\Coin\View\ChangeValue;
+use Core\Domain\Model\Coin\View\CoinCollection;
+use Core\Domain\Model\Coin\View\CoinResumeCollection;
+use Core\Domain\Model\Item\View\ItemPrice;
 use Core\Domain\Model\Coin\Type\CoinValueType;
 
 final class Change
@@ -20,25 +22,25 @@ final class Change
 
     public function __construct(
         ItemPrice $price,
-        array $coinsPocket,
-        array $coinsResumeMachine
+        CoinCollection $coinsPocket,
+        CoinResumeCollection $coinsResumeMachine
     )
     {
         $this->price              = $price;
         $this->coinsPocket        = $coinsPocket;
         $this->coinsResumeMachine = $coinsResumeMachine;
 
-        $totalPocket = ChangeValue::fromArray($this->coinsPocket);
-        $change = $totalPocket->sub($price);
+        $change = ChangeValue::fromBase($this->coinsPocket->total());
+        $change = $change->sub($price);
 
         if ($change->isLessThanZero()) {
             throw new \InvalidArgumentException('Not enough money for it, that cost ' . $price);
         }
 
         $this->changeCoinsFromPocket = $this->availableCoinsFromPocket($change);
-        $change = $change->sub(ChangeValue::fromArray($this->changeCoinsFromPocket));
+        $change = $change->sub($this->changeCoinsFromPocket->total());
         $this->changeCoinsFromMachine = $this->availableCoinsFromMachine($change);
-        $change = $change->sub(ChangeValue::fromArray($this->changeCoinsFromMachine));
+        $change = $change->sub($this->changeCoinsFromMachine->total());
 
         if ($change->isGreaterThanZero()) {
             throw new \InvalidArgumentException('We don\'t have enough coins to return the change.');
@@ -48,18 +50,18 @@ final class Change
     }
 
 
-    private function availableCoinsFromPocket(ChangeValue $change): array
+    private function availableCoinsFromPocket(ChangeValue $change): CoinCollection
     {
-        $availableCoins = [];
+        $availableCoins = new CoinCollection();
         if ($change->isGreaterThanZero()) {
             $pocket = $this->coinsPocket;
-            rsort($pocket, SORT_NUMERIC);
-            foreach ($pocket as $coin) {
-                if (in_array($coin, CoinValueType::RETURN)) {
-                    $coin = CoinValue::fromFloat($coin);
-                    if ($change->isGreaterThanOrEqualTo($coin)) {
-                        $availableCoins[] = $coin->value();
-                        $change = $change->sub($coin);
+            $pocket->sortByValuesDesc();
+            foreach ($pocket->getIterator() as $coin) {
+                $value  = $coin->value();
+                if (in_array($value->value(), CoinValueType::RETURN)) {
+                    if ($change->isGreaterThanOrEqualTo($value)) {
+                        $availableCoins->append($coin);
+                        $change = $change->sub($value);
                     }
                 }
             }
@@ -68,9 +70,9 @@ final class Change
         return $availableCoins;
     }
 
-    private function availableCoinsFromMachine(ChangeValue $change): array
+    private function availableCoinsFromMachine(ChangeValue $change): CoinCollection
     {
-        $availableCoins = [];
+        $availableCoins = new CoinCollection();
         if ($change->isGreaterThanZero()) {
             $coins = $this->coinsResumeMachine;
             foreach ($coins as $coin) {
@@ -78,7 +80,7 @@ final class Change
                 if (in_array($value->value(), CoinValueType::RETURN)) {
                     $amount = $coin->amount();
                     while ($change->isGreaterThanOrEqualTo($value) && ($amount > 0)) {
-                        $availableCoins[] = $value->value();
+                        $availableCoins->append($coin->coin());
                         $change = $change->sub($value);
                         $amount--;
                     }
@@ -99,12 +101,12 @@ final class Change
         return $this->change;
     }
 
-    public function changeCoinsFromPocket(): array
+    public function changeCoinsFromPocket(): CoinCollection
     {
         return $this->changeCoinsFromPocket;
     }
 
-    public function changeCoinsFromMachine(): array
+    public function changeCoinsFromMachine(): CoinCollection
     {
         return $this->changeCoinsFromMachine;
     }

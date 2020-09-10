@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Core\Domain\Model\Item\View;
 
 use \JsonSerializable;
-use Core\Domain\Model\Item\ItemPrice;
+use Core\Domain\Model\Item\View\ItemPrice;
 
 final class Item implements JsonSerializable
 {

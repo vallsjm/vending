@@ -7,7 +7,7 @@ namespace Core\Application\Service;
 use Common\Application\Service\BaseService;
 use Core\Domain\Model\Item\ItemId;
 use Core\Domain\Model\Item\View\Item;
-use Common\Domain\ValueObject\Money\BaseMoney;
+use Core\Domain\Model\Item\View\ItemCollection;
 use Core\Domain\Model\Item\Type\ItemPriceType;
 
 final class ItemService extends BaseService
@@ -96,14 +96,14 @@ final class ItemService extends BaseService
         $this->commandBus->dispatch($command);
     }
 
-    public function items(): array
+    public function items(): ItemCollection
     {
         $payload = [];
         $query = $this->messageFactory->createMessageFromArray(
             'Core\Domain\Model\Item\Query\GetAllItems', ['payload' => $payload]
         );
 
-        $items = [];
+        $items = new ItemCollection();
         $this->queryBus->dispatch($query)->then(function ($result) use (&$items) {
             $items = $result;
         });
