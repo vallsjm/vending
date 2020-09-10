@@ -19,11 +19,11 @@ services:
         class: API\Service\VendingService
         arguments: ['@api.service.pocket', '@core.service.coin_service', '@core.service.item_service']
 
-    # api.eventlistener.exceptionlistener:
-    #     class: API\EventListener\ExceptionListener
-    #     arguments: ['@api.service.formatresponse']
-    #     tags:
-    #         - { name: kernel.event_listener, event: kernel.exception }
+    api.eventlistener.exceptionlistener:
+        class: API\EventListener\ExceptionListener
+        arguments: ['@api.service.formatresponse']
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
 
     api.eventlistener.formatlistener:
         class: API\EventListener\FormatListener
